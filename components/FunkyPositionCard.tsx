@@ -3,7 +3,7 @@
 import { Position } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Skull, Flame, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, Skull, Flame, AlertTriangle, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FunkyPositionCardProps {
@@ -12,46 +12,46 @@ interface FunkyPositionCardProps {
 }
 
 export default function FunkyPositionCard({ position, index }: FunkyPositionCardProps) {
-  const formatUSD = (num: number | null | undefined, noDecimals: boolean = false) => {
+  const formatUSD = (num: number | null | undefined) => {
     if (num === null || num === undefined) return '$0';
     const absNum = Math.abs(num);
-    
-    if (noDecimals) {
-      // Round to nearest integer for PnL
-      const rounded = Math.round(num);
-      if (Math.abs(rounded) >= 1000000) return `$${(rounded / 1000000).toFixed(1)}M`;
-      if (Math.abs(rounded) >= 1000) return `$${(rounded / 1000).toFixed(0)}K`;
-      return `$${rounded.toLocaleString()}`;
-    }
-    
     if (absNum >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
     if (absNum >= 1000) return `$${(num / 1000).toFixed(1)}K`;
     return `$${num.toFixed(2)}`;
   };
 
-  const getRiskGradient = (riskLevel?: string) => {
+  const getRiskStyles = (riskLevel?: string) => {
     switch (riskLevel) {
       case 'critical':
-        return 'from-red-900 to-red-600 animate-pulse';
+        return 'bg-[#1a1a1a] border-[#FB2C36]/30 hover:border-[#FB2C36]/50';
       case 'danger':
-        return 'from-orange-800 to-orange-500';
+        return 'bg-[#1a1a1a] border-[#FE9A00]/30 hover:border-[#FE9A00]/50';
       case 'warning':
-        return 'from-yellow-700 to-yellow-500';
+        return 'bg-[#1a1a1a] border-[#FE9A00]/30 hover:border-[#FE9A00]/50';
       default:
-        return 'from-gray-800 to-gray-600';
+        return 'bg-[#1a1a1a] border-[#333] hover:border-[#444]';
     }
   };
 
   const getRiskIcon = (riskLevel?: string) => {
     switch (riskLevel) {
       case 'critical':
-        return <Skull className="w-6 h-6 text-red-400 animate-bounce" />;
+        return <Skull className="w-4 h-4 text-[#FB2C36] animate-pulse" />;
       case 'danger':
-        return <Flame className="w-6 h-6 text-orange-400" />;
+        return <Flame className="w-4 h-4 text-[#FE9A00]" />;
       case 'warning':
-        return <AlertTriangle className="w-6 h-6 text-yellow-400" />;
+        return <AlertTriangle className="w-4 h-4 text-[#FE9A00]" />;
       default:
         return null;
+    }
+  };
+
+  const getRiskColor = (riskLevel?: string) => {
+    switch (riskLevel) {
+      case 'critical': return 'text-[#FB2C36]';
+      case 'danger': return 'text-[#FE9A00]';
+      case 'warning': return 'text-[#FE9A00]';
+      default: return 'text-gray-300';
     }
   };
 
@@ -62,86 +62,106 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
-      whileHover={{ scale: 1.02 }}
-      className="relative"
+      className="relative group"
     >
-      <Card className={`bg-gradient-to-br ${getRiskGradient(position.riskLevel)} border-0 overflow-hidden`}>
-        <div className="absolute top-0 right-0 p-2">
-          {getRiskIcon(position.riskLevel)}
-        </div>
+      <Card className={`${getRiskStyles(position.riskLevel)} border overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all group-hover:scale-[1.02]`}>
+        {/* Header Section */}
+        <div className="p-6 border-b border-[#333]">
+          <div className="flex items-center gap-4">
+            {/* Avatar */}
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#97FCE4] to-[#7EDDC4] flex items-center justify-center flex-shrink-0">
+              <span className="text-[#1D1D1D] font-pixelify font-bold text-sm">
+                {position.entityName.slice(0, 2).toUpperCase()}
+              </span>
+            </div>
 
-        <div className="p-6 text-white">
-          {/* Header */}
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex flex-col gap-1">
+            {/* Name and Address */}
+            <div className="flex-1 min-w-0">
               {position.twitter ? (
                 <a
                   href={position.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xl font-bold hover:text-cyan-300 transition-colors"
+                  className="flex items-center gap-1 text-lg font-ibm text-white hover:text-[#97FCE4] transition-colors group"
                 >
-                  {position.entityName}
+                  <span className="truncate">{position.entityName}</span>
+                  <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                 </a>
               ) : (
-                <h3 className="text-xl font-bold">{position.entityName}</h3>
+                <h3 className="text-lg font-ibm text-white truncate">{position.entityName}</h3>
               )}
               <a
                 href={`https://hyperdash.info/trader/${position.address}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs opacity-70 hover:opacity-100 font-mono"
+                className="flex items-center gap-1 text-xs text-[#a3a3a3] hover:text-[#97FCE4] font-ibm group"
               >
-                {position.address.slice(2, 7)}
+                <span>{position.address.slice(2, 8)}...</span>
+                <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
               </a>
             </div>
-            <Badge variant={isProfiting ? "default" : "destructive"} className="text-lg px-3 py-1">
-              {position.coin}
-            </Badge>
+
+            {/* Risk Level and Asset */}
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-1">
+                {getRiskIcon(position.riskLevel)}
+                <span className={`text-xs font-ibm uppercase ${getRiskColor(position.riskLevel)}`}>
+                  {position.riskLevel || 'safe'}
+                </span>
+              </div>
+              <Badge
+                className={`text-xs px-2 py-1 font-ibm rounded-md ${
+                  isProfiting
+                    ? 'bg-[#00C950]/10 text-[#00C950] border border-[#00C950]/30'
+                    : 'bg-[#FB2C36]/10 text-[#FB2C36] border border-[#FB2C36]/30'
+                }`}
+              >
+                {position.coin}
+              </Badge>
+            </div>
+          </div>
+        </div>
+
+        {/* Metrics Section */}
+        <div className="p-6 space-y-4">
+          {/* Position Value */}
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Position Value</p>
+              <p className="text-2xl font-pixelify font-bold text-white">{formatUSD(position.positionValue)}</p>
+            </div>
           </div>
 
-          {/* Position Size - Leverage removed */}
-          <div className="mb-4">
-            <p className="text-xs opacity-70">Position Value</p>
-            <p className="text-2xl font-bold">{formatUSD(position.positionValue)}</p>
-          </div>
-
-          {/* PnL Display */}
-          <div className={`rounded-lg p-3 mb-4 ${isProfiting ? 'bg-green-900/50' : 'bg-red-900/50'}`}>
-            <div className="flex items-center justify-between">
-              <span className="text-sm opacity-70">Unrealized PnL</span>
+          {/* PnL */}
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Unrealized PnL</p>
               <div className="flex items-center gap-2">
                 {isProfiting ? (
-                  <TrendingUp className="w-5 h-5 text-green-400" />
+                  <TrendingUp className="w-4 h-4 text-[#00C950]" />
                 ) : (
-                  <TrendingDown className="w-5 h-5 text-red-400" />
+                  <TrendingDown className="w-4 h-4 text-[#FB2C36]" />
                 )}
-                <span className={`text-xl font-bold ${isProfiting ? 'text-green-400' : 'text-red-400'}`}>
-                  {formatUSD(position.unrealizedPnl, true)}
+                <span className={`text-xl font-pixelify font-bold ${isProfiting ? 'text-[#00C950]' : 'text-[#FB2C36]'}`}>
+                  {formatUSD(position.unrealizedPnl)}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Liquidation Info */}
+          {/* Liquidation Distance */}
           {position.liquidationDistance && (
-            <div className="bg-black/30 rounded-lg p-3">
+            <div className="bg-[#111] rounded-lg p-3 border border-[#333]">
               <div className="flex justify-between items-center">
-                <span className="text-sm opacity-70">Distance to Liquidation</span>
-                <div className="text-right">
-                  <p className="text-lg font-bold">
-                    {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
-                  </p>
-                  {/* Liquidation price commented out for future use
-                  <p className="text-xs opacity-70">
-                    @ {formatUSD(position.liquidationPrice)}
-                  </p>
-                  */}
-                </div>
+                <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Liquidation Distance</span>
+                <span className={`text-lg font-pixelify font-bold ${getRiskColor(position.riskLevel)}`}>
+                  {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
+                </span>
               </div>
               {position.riskLevel === 'critical' && (
-                <div className="mt-2 text-xs text-red-300 animate-pulse">
-                  ⚠️ LIQUIDATION IMMINENT
+                <div className="mt-2 text-xs text-[#FB2C36] animate-pulse font-ibm font-bold uppercase tracking-wide flex items-center gap-1">
+                  <Skull className="w-3 h-3" />
+                  Liquidation Risk
                 </div>
               )}
             </div>

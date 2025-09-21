@@ -21,7 +21,7 @@ Real-time monitoring dashboard for Hyperliquid positions of identified Arkham en
 ## Setup
 
 ### Production Deployment (Recommended)
-
+        
 For continuous monitoring with background sync service:
 
 ```bash

@@ -2,7 +2,7 @@
 
 import { Position } from '@/lib/types';
 import { getRiskEmoji } from '@/lib/liquidation';
-import { ArrowUpDown, ExternalLink, Twitter } from 'lucide-react';
+import { ArrowUpDown, Twitter } from 'lucide-react';
 import { useState } from 'react';
 
 interface PositionTableProps {

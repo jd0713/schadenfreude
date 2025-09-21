@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { DataSyncService } from '@/services/dataSync';
 
 // Create a singleton instance
@@ -11,7 +11,7 @@ function getSyncService() {
   return syncService;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const syncService = getSyncService();
     const result = await syncService.manualSync();
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return NextResponse.json({
     message: 'Use POST method to trigger sync',
     endpoint: '/api/sync',

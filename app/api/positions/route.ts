@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PositionFetcher } from '@/services/positionFetcher';
-import { db } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { Position } from '@/lib/types';
 import { calculatePositionMetrics } from '@/lib/liquidation';
 import { HyperliquidClient } from '@/lib/hyperliquid';
@@ -14,7 +13,7 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
     // Get positions from database with entity info
-    const { data: dbPositions, error } = await db.supabase
+    const { data: dbPositions, error } = await supabase
       .from('positions')
       .select(`
         *,
@@ -39,7 +38,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Transform and enrich positions
-    let positions: Position[] = (dbPositions || []).map((dbPos: any) => {
+    interface DbPositionWithEntity {
+      id: number;
+      address: string;
+      coin: string;
+      entry_price: number;
+      position_size: number;
+      leverage: number;
+      liquidation_price: number;
+      unrealized_pnl: number;
+      margin_used: number;
+      position_value: number;
+      last_updated: string;
+      entities?: {
+        name: string;
+        twitter?: string;
+        entity_type?: string;
+      };
+    }
+
+    let positions: Position[] = (dbPositions || []).map((dbPos: DbPositionWithEntity) => {
       const currentPrice = parseFloat(prices[dbPos.coin] || '0');
       
       const position: Position = {

@@ -2,7 +2,7 @@ import { PositionFetcher } from './positionFetcher';
 
 export class DataSyncService {
   private fetcher: PositionFetcher;
-  private syncInterval: NodeJS.Timer | null = null;
+  private syncInterval: NodeJS.Timeout | null = null;
 
   constructor() {
     this.fetcher = new PositionFetcher();

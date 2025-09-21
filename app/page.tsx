@@ -14,6 +14,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 export default function Home() {
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const [selectedRiskFilter, setSelectedRiskFilter] = useState<string | null>(null);
+  const [showHighRiskOnly, setShowHighRiskOnly] = useState(true);
+  const [selectedSizeCategory, setSelectedSizeCategory] = useState<'all' | 'whale' | 'dolphin' | 'shrimp'>('all');
 
   // Build query string
   const queryParams = new URLSearchParams();
@@ -27,7 +29,25 @@ export default function Home() {
     revalidateOnFocus: true,
   });
 
-  const positions: Position[] = data?.data || [];
+  let positions: Position[] = data?.data || [];
+  
+  // Apply client-side filtering
+  if (showHighRiskOnly) {
+    positions = positions.filter(p => 
+      (p.liquidationDistance && p.liquidationDistance < 10) || 
+      p.positionValue > 100000
+    );
+  }
+  
+  // Apply size category filter
+  if (selectedSizeCategory !== 'all') {
+    positions = positions.filter(p => {
+      if (selectedSizeCategory === 'whale') return p.positionValue > 1000000;
+      if (selectedSizeCategory === 'dolphin') return p.positionValue >= 100000 && p.positionValue <= 1000000;
+      if (selectedSizeCategory === 'shrimp') return p.positionValue < 100000;
+      return true;
+    });
+  }
 
   // Calculate stats
   const stats = {
@@ -138,41 +158,72 @@ export default function Home() {
         )}
 
         {/* Filter Controls */}
-        <div className="mb-6 flex flex-wrap gap-2 justify-center">
-          <Button
-            onClick={() => setSelectedRiskFilter(null)}
-            variant={selectedRiskFilter === null ? "default" : "outline"}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-          >
-            All Positions
-          </Button>
-          <Button
-            onClick={() => setSelectedRiskFilter('critical')}
-            variant={selectedRiskFilter === 'critical' ? "destructive" : "outline"}
-            className="border-red-500/50 text-red-400 hover:bg-red-500/20"
-          >
-            <Skull className="w-4 h-4 mr-2" />
-            Critical Only
-          </Button>
-          <Button
-            onClick={() => setSelectedRiskFilter('danger')}
-            variant={selectedRiskFilter === 'danger' ? "destructive" : "outline"}
-            className="border-orange-500/50 text-orange-400 hover:bg-orange-500/20"
-          >
-            Danger Zone
-          </Button>
-          <Button
-            onClick={handleRefresh}
-            disabled={isManualRefreshing}
-            className="bg-violet-600 hover:bg-violet-700 text-white"
-          >
-            {isManualRefreshing ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : (
-              <RefreshCw className="w-4 h-4" />
-            )}
-            <span className="ml-2">Refresh</span>
-          </Button>
+        <div className="mb-6 space-y-3">
+          {/* Size Categories */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Button
+              onClick={() => selectedSizeCategory === 'whale' ? setSelectedSizeCategory('all') : setSelectedSizeCategory('whale')}
+              variant={selectedSizeCategory === 'whale' ? "default" : "outline"}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              🐋 Whales (&gt;$1M)
+            </Button>
+            <Button
+              onClick={() => selectedSizeCategory === 'dolphin' ? setSelectedSizeCategory('all') : setSelectedSizeCategory('dolphin')}
+              variant={selectedSizeCategory === 'dolphin' ? "default" : "outline"}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              🐬 Dolphins ($100K-$1M)
+            </Button>
+            <Button
+              onClick={() => selectedSizeCategory === 'shrimp' ? setSelectedSizeCategory('all') : setSelectedSizeCategory('shrimp')}
+              variant={selectedSizeCategory === 'shrimp' ? "default" : "outline"}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              🦐 Shrimps (&lt;$100K)
+            </Button>
+          </div>
+
+          {/* Risk Filters */}
+          <div className="flex flex-wrap gap-2 justify-center">
+            <Button
+              onClick={() => setShowHighRiskOnly(!showHighRiskOnly)}
+              variant={showHighRiskOnly ? "destructive" : "outline"}
+              className={showHighRiskOnly ? "" : "border-white/20 text-white hover:bg-white/20"}
+            >
+              <Skull className="w-4 h-4 mr-2" />
+              High Risk Only
+            </Button>
+            <Button
+              onClick={() => setSelectedRiskFilter(selectedRiskFilter === 'critical' ? null : 'critical')}
+              variant={selectedRiskFilter === 'critical' ? "destructive" : "outline"}
+              className="border-red-500/50 text-red-400 hover:bg-red-500/20"
+            >
+              Critical (&lt;5%)
+            </Button>
+            <Button
+              onClick={() => setSelectedRiskFilter(selectedRiskFilter === 'danger' ? null : 'danger')}
+              variant={selectedRiskFilter === 'danger' ? "destructive" : "outline"}
+              className="border-orange-500/50 text-orange-400 hover:bg-orange-500/20"
+            >
+              Danger (5-10%)
+            </Button>
+            <Button
+              onClick={() => setSelectedRiskFilter(null)}
+              variant={!selectedRiskFilter && !showHighRiskOnly ? "default" : "outline"}
+              className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            >
+              All Positions
+            </Button>
+            <Button
+              onClick={handleRefresh}
+              disabled={isManualRefreshing}
+              className="bg-violet-600 text-white hover:bg-violet-700"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${isManualRefreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
         </div>
 
         {/* Main Content */}

@@ -3,6 +3,13 @@
  * Updates positions based on their risk level with different intervals
  */
 
+import { config } from 'dotenv';
+import path from 'path';
+
+// Load environment variables from .env.local BEFORE importing supabase
+config({ path: path.join(__dirname, '../.env.local') });
+
+// Now import modules that depend on environment variables
 import { DataSyncService } from './dataSync';
 import { PositionFetcher } from './positionFetcher';
 import { db } from '../lib/supabase';

@@ -3,9 +3,15 @@
  * Watches for changes in entities.json and syncs with Supabase
  */
 
+import { config } from 'dotenv';
+import path from 'path';
+
+// Load environment variables from .env.local BEFORE importing supabase
+config({ path: path.join(__dirname, '../.env.local') });
+
+// Now import modules that depend on environment variables
 import fs from 'fs/promises';
 import { watch, FSWatcher } from 'fs';
-import path from 'path';
 import { supabase } from '../lib/supabase';
 import crypto from 'crypto';
 

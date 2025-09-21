@@ -16,6 +16,9 @@ module.exports = {
       max_memory_restart: '500M',
       env: {
         NODE_ENV: 'production',
+        SUPABASE_URL: 'https://ivlxdnlmcvmuilnzumah.supabase.co',
+        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2bHhkbmxtY3ZtdWlsbnp1bWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0Mzg3MDksImV4cCI6MjA3NDAxNDcwOX0.mCcU0f33biScI1xpZO1g-XKFbXoGwahQVXk-2go8N1c',
+        HYPERLIQUID_API_URL: 'http://localhost:3001/info',
       },
       env_development: {
         NODE_ENV: 'development',
@@ -39,6 +42,9 @@ module.exports = {
       max_memory_restart: '200M',
       env: {
         NODE_ENV: 'production',
+        SUPABASE_URL: 'https://ivlxdnlmcvmuilnzumah.supabase.co',
+        SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml2bHhkbmxtY3ZtdWlsbnp1bWFoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg0Mzg3MDksImV4cCI6MjA3NDAxNDcwOX0.mCcU0f33biScI1xpZO1g-XKFbXoGwahQVXk-2go8N1c',
+        HYPERLIQUID_API_URL: 'http://localhost:3001/info',
       },
       error_file: './logs/entity-sync-error.log',
       out_file: './logs/entity-sync-out.log',

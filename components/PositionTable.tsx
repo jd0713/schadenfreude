@@ -2,7 +2,7 @@
 
 import { Position } from '@/lib/types';
 import { getRiskEmoji } from '@/lib/liquidation';
-import { ArrowUpDown, Twitter } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 import { useState } from 'react';
 
 interface PositionTableProps {
@@ -113,25 +113,29 @@ export default function PositionTable({ positions, onSort }: PositionTableProps)
                 <span className="text-2xl">{getRiskEmoji(position.riskLevel || 'safe')}</span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div className="flex items-center gap-2">
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {position.entityName}
-                    </div>
-                    <div className="text-xs text-gray-500">
-                      {position.address.slice(0, 6)}...{position.address.slice(-4)}
-                    </div>
-                  </div>
-                  {position.twitter && (
+                <div>
+                  {position.twitter ? (
                     <a
                       href={position.twitter}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-600"
+                      className="text-sm font-medium text-gray-900 hover:text-blue-600 hover:underline"
                     >
-                      <Twitter className="w-4 h-4" />
+                      {position.entityName}
                     </a>
+                  ) : (
+                    <div className="text-sm font-medium text-gray-900">
+                      {position.entityName}
+                    </div>
                   )}
+                  <a
+                    href={`https://hyperdash.info/trader/${position.address}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
+                  >
+                    {position.address.slice(0, 6)}...{position.address.slice(-4)}
+                  </a>
                 </div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">

@@ -5,6 +5,7 @@ const API_URL = process.env.HYPERLIQUID_API_URL || 'https://api.hyperliquid.xyz/
 
 export class HyperliquidClient {
   private apiUrl: string;
+  private publicApiUrl: string = 'https://api.hyperliquid.xyz/info';
 
   constructor(apiUrl?: string) {
     this.apiUrl = apiUrl || API_URL;
@@ -33,10 +34,11 @@ export class HyperliquidClient {
 
   /**
    * Get current mid prices for all assets
+   * Note: This must use the public API, not local node
    */
   async getAllMidPrices(): Promise<HyperliquidMidPrice | null> {
     try {
-      const response = await axios.post(this.apiUrl, {
+      const response = await axios.post(this.publicApiUrl, {
         type: 'allMids',
       }, {
         headers: {

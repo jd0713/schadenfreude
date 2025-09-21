@@ -87,7 +87,9 @@ export const db = {
     if (!supabase) return null;
     const { data, error } = await supabase
       .from('positions')
-      .upsert(position)
+      .upsert(position, {
+        onConflict: 'address,coin',  // Specify the unique constraint columns
+      })
       .select('id')
       .single();
 

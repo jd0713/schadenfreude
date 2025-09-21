@@ -1,52 +1,13 @@
 import { HyperliquidClient } from '@/lib/hyperliquid';
 import { db } from '@/lib/supabase';
 import { calculatePositionMetrics } from '@/lib/liquidation';
-import { Position, ArkhamEntity, HyperliquidAccountState } from '@/lib/types';
-import fs from 'fs/promises';
-import path from 'path';
+import { Position } from '@/lib/types';
 
 export class PositionFetcher {
   private hyperliquid: HyperliquidClient;
 
   constructor() {
     this.hyperliquid = new HyperliquidClient();
-  }
-
-  /**
-   * Load entities from local JSON file
-   */
-  async loadEntitiesFromFile(): Promise<ArkhamEntity[]> {
-    try {
-      const filePath = path.join(process.cwd(), '..', 'arkham_entity_collector', 'data', 'entities.json');
-      const fileContent = await fs.readFile(filePath, 'utf-8');
-      const entitiesObj = JSON.parse(fileContent);
-      
-      // Convert object to array
-      return Object.values(entitiesObj);
-    } catch (error) {
-      console.error('Error loading entities from file:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Sync entities to Supabase
-   */
-  async syncEntitiesToDatabase(entities: ArkhamEntity[]): Promise<void> {
-    for (const entity of entities) {
-      try {
-        await db.upsertEntity({
-          address: entity.address,
-          name: entity.arkhamEntity.name,
-          twitter: entity.arkhamEntity.twitter,
-          entity_type: entity.arkhamEntity.type,
-          collected_at: entity.collected_at,
-          chain: entity.chain,
-        });
-      } catch (error) {
-        console.error(`Error syncing entity ${entity.address}:`, error);
-      }
-    }
   }
 
   /**

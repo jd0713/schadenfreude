@@ -9,19 +9,12 @@ export class DataSyncService {
   }
 
   /**
-   * Perform initial sync
+   * Perform initial sync (positions only, entities are already in DB)
    */
   async initialSync(): Promise<void> {
-    console.log('Starting initial data sync...');
-    
-    // Load and sync entities
-    const entities = await this.fetcher.loadEntitiesFromFile();
-    console.log(`Loaded ${entities.length} entities from file`);
-    
-    await this.fetcher.syncEntitiesToDatabase(entities);
-    console.log('Entities synced to database');
-    
-    // Fetch initial positions
+    console.log('Starting initial position sync...');
+
+    // Fetch positions from Hyperliquid for entities in database
     const positions = await this.fetcher.fetchAllPositions();
     console.log(`Fetched ${positions.length} positions`);
   }
@@ -58,7 +51,7 @@ export class DataSyncService {
   }
 
   /**
-   * Manual sync trigger
+   * Manual sync trigger (positions only)
    */
   async manualSync(): Promise<{
     success: boolean;
@@ -66,22 +59,18 @@ export class DataSyncService {
     errors?: string[];
   }> {
     const errors: string[] = [];
-    
+
     try {
-      // Sync entities first
-      const entities = await this.fetcher.loadEntitiesFromFile();
-      await this.fetcher.syncEntitiesToDatabase(entities);
-      
-      // Then fetch positions
+      // Fetch positions for entities already in database
       const positions = await this.fetcher.fetchAllPositions();
-      
+
       return {
         success: true,
         positionsUpdated: positions.length,
       };
     } catch (error) {
       errors.push(error instanceof Error ? error.message : 'Unknown error');
-      
+
       return {
         success: false,
         positionsUpdated: 0,

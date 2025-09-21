@@ -39,6 +39,7 @@ npm install
 2. Go to SQL Editor in your Supabase dashboard
 3. Run the SQL from `supabase-schema.sql` to create the required tables
 4. Get your project URL and anon key from Settings → API
+5. Upload initial entities data: `npm run upload-entities`
 
 ### 3. Configure Environment Variables
 
@@ -69,9 +70,9 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 
 ### Important Notes for Production
 
-- The data fetching service needs access to the local entities.json file
-- Consider setting up a scheduled job (cron) for regular data syncing
-- You may need to adjust the file path in `services/positionFetcher.ts` for production
+- Entities are now stored in Supabase, no local file access needed
+- Use `npm run upload-entities` to upload initial data
+- Consider setting up a scheduled job (cron) for regular position syncing
 
 ## API Endpoints
 
@@ -79,6 +80,9 @@ Open [http://localhost:3000](http://localhost:3000) to view the dashboard.
 - `GET /api/positions/risky` - Get only risky positions
 - `POST /api/sync` - Manually trigger data synchronization
 - `GET /api/prices` - Get current prices for all assets
+- `GET /api/entities` - Get all entities from database
+- `POST /api/entities` - Add new entity to track
+- `DELETE /api/entities?address=xxx` - Remove entity from tracking
 
 ## Project Structure
 

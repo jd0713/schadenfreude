@@ -3,7 +3,7 @@
 import { Position } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Skull, Flame, AlertTriangle, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, Skull, Flame, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FunkyPositionCardProps {
@@ -12,7 +12,8 @@ interface FunkyPositionCardProps {
 }
 
 export default function FunkyPositionCard({ position, index }: FunkyPositionCardProps) {
-  const formatUSD = (num: number) => {
+  const formatUSD = (num: number | null | undefined) => {
+    if (num === null || num === undefined) return '$0';
     const absNum = Math.abs(num);
     if (absNum >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
     if (absNum >= 1000) return `$${(num / 1000).toFixed(1)}K`;
@@ -126,7 +127,7 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
                 <span className="text-sm opacity-70">Distance to Liquidation</span>
                 <div className="text-right">
                   <p className="text-lg font-bold">
-                    {position.liquidationDistance.toFixed(2)}%
+                    {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
                   </p>
                   <p className="text-xs opacity-70">
                     @ {formatUSD(position.liquidationPrice)}

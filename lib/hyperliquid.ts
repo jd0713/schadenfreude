@@ -59,8 +59,20 @@ export class HyperliquidClient {
   async getMultipleAccountStates(addresses: string[]): Promise<Map<string, HyperliquidAccountState>> {
     const results = new Map<string, HyperliquidAccountState>();
     
-    // Process in batches to avoid overwhelming the API
-    const batchSize = 10;
+    // Optimized batch size for local node (can handle much more)
+    const isLocalNode = this.apiUrl.includes('localhost') || this.apiUrl.includes('127.0.0.1');
+    
+    // Allow configuration via environment variables
+    const batchSize = isLocalNode 
+      ? (process.env.BATCH_SIZE_LOCAL ? parseInt(process.env.BATCH_SIZE_LOCAL) : 500)
+      : (process.env.BATCH_SIZE_REMOTE ? parseInt(process.env.BATCH_SIZE_REMOTE) : 10);
+    
+    const delayMs = isLocalNode 
+      ? (process.env.BATCH_DELAY_LOCAL ? parseInt(process.env.BATCH_DELAY_LOCAL) : 5)
+      : (process.env.BATCH_DELAY_REMOTE ? parseInt(process.env.BATCH_DELAY_REMOTE) : 100);
+    
+    console.log(`🔄 Fetching ${addresses.length} account states in batches of ${batchSize}`);
+    
     for (let i = 0; i < addresses.length; i += batchSize) {
       const batch = addresses.slice(i, i + batchSize);
       const promises = batch.map(address => this.getAccountState(address));
@@ -73,11 +85,18 @@ export class HyperliquidClient {
         }
       });
       
-      // Small delay between batches
+      // Progress logging for large batches
+      if (addresses.length > 50 && i % 100 === 0) {
+        console.log(`   Progress: ${Math.min(i + batchSize, addresses.length)}/${addresses.length} accounts fetched`);
+      }
+      
+      // Small delay between batches (shorter for local node)
       if (i + batchSize < addresses.length) {
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, delayMs));
       }
     }
+    
+    console.log(`✅ Fetched ${results.size}/${addresses.length} account states successfully`);
     
     return results;
   }

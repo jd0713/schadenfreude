@@ -4,17 +4,15 @@ import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import FunkyPositionCard from '@/components/FunkyPositionCard';
 import { Position } from '@/lib/types';
-import { Loader2, Zap, TrendingUp, TrendingDown, Skull, RefreshCw, Filter } from 'lucide-react';
+import { Loader2, TrendingUp, Skull, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { motion } from 'framer-motion';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Home() {
-  const [filters, setFilters] = useState<{ riskLevel?: string; coin?: string }>({});
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedRiskFilter, setSelectedRiskFilter] = useState<string | null>(null);
 
   // Build query string
@@ -34,8 +32,8 @@ export default function Home() {
   // Calculate stats
   const stats = {
     totalPositions: positions.length,
-    totalValue: positions.reduce((acc, p) => acc + p.positionValue, 0),
-    totalPnL: positions.reduce((acc, p) => acc + p.unrealizedPnl, 0),
+    totalValue: positions.reduce((acc, p) => acc + (p.positionValue || 0), 0),
+    totalPnL: positions.reduce((acc, p) => acc + (p.unrealizedPnl || 0), 0),
     criticalCount: positions.filter(p => p.riskLevel === 'critical').length,
     dangerCount: positions.filter(p => p.riskLevel === 'danger').length,
     profitingCount: positions.filter(p => p.unrealizedPnl > 0).length,
@@ -62,7 +60,8 @@ export default function Home() {
     fetch('/api/sync', { method: 'POST' }).catch(console.error);
   }, []);
 
-  const formatLargeUSD = (num: number) => {
+  const formatLargeUSD = (num: number | null | undefined) => {
+    if (num === null || num === undefined) return '$0';
     const absNum = Math.abs(num);
     if (absNum >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
     if (absNum >= 1000) return `$${(num / 1000).toFixed(1)}K`;

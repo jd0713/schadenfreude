@@ -20,6 +20,36 @@ Real-time monitoring dashboard for Hyperliquid positions of identified Arkham en
 
 ## Setup
 
+### Production Deployment (Recommended)
+
+For continuous monitoring with background sync service:
+
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment variables
+cp .env.example .env.local
+# Edit .env.local with your Supabase credentials
+
+# 3. Upload entities to Supabase (one-time)
+npx tsx scripts/uploadEntities.ts
+
+# 4. Deploy with PM2
+./scripts/deploy.sh
+
+# 5. Start Next.js app (in separate terminal)
+npm run build && npm run start
+```
+
+The background sync service features:
+- **Continuous monitoring**: Syncs every 30 seconds
+- **Optimized for local node**: Processes 500 addresses in parallel
+- **Auto-restart**: PM2 manages process lifecycle
+- **Production ready**: Logs, error handling, and monitoring
+
+### Development Setup
+
 ### Prerequisites
 
 - Node.js 18+ installed

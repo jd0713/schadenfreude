@@ -3,7 +3,7 @@
 import { Position } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { TrendingUp, TrendingDown, Skull, Fire, AlertTriangle, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, Skull, Flame, AlertTriangle, DollarSign } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface FunkyPositionCardProps {
@@ -37,7 +37,7 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
       case 'critical':
         return <Skull className="w-6 h-6 text-red-400 animate-bounce" />;
       case 'danger':
-        return <Fire className="w-6 h-6 text-orange-400" />;
+        return <Flame className="w-6 h-6 text-orange-400" />;
       case 'warning':
         return <AlertTriangle className="w-6 h-6 text-yellow-400" />;
       default:

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Arkham Liquidation Monitor",
-  description: "Real-time monitoring of Hyperliquid positions for identified Arkham entities",
+  title: "Schadenfreude",
+  description: "Monitoring the positions of known addresses on Hyperliquid",
 };
 
 export default function RootLayout({

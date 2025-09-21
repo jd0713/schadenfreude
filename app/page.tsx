@@ -2,22 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import useSWR from 'swr';
-import PositionTable from '@/components/PositionTable';
-import FilterControls from '@/components/FilterControls';
-import DashboardStats from '@/components/DashboardStats';
+import FunkyPositionCard from '@/components/FunkyPositionCard';
 import { Position } from '@/lib/types';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { Loader2, Zap, TrendingUp, TrendingDown, Skull, RefreshCw, Filter } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Home() {
   const [filters, setFilters] = useState<{ riskLevel?: string; coin?: string }>({});
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedRiskFilter, setSelectedRiskFilter] = useState<string | null>(null);
 
   // Build query string
   const queryParams = new URLSearchParams();
-  if (filters.riskLevel) queryParams.set('riskLevel', filters.riskLevel);
-  if (filters.coin) queryParams.set('coin', filters.coin);
+  if (selectedRiskFilter) queryParams.set('riskLevel', selectedRiskFilter);
   const queryString = queryParams.toString();
   const apiUrl = `/api/positions${queryString ? `?${queryString}` : ''}`;
 
@@ -29,10 +31,20 @@ export default function Home() {
 
   const positions: Position[] = data?.data || [];
 
+  // Calculate stats
+  const stats = {
+    totalPositions: positions.length,
+    totalValue: positions.reduce((acc, p) => acc + p.positionValue, 0),
+    totalPnL: positions.reduce((acc, p) => acc + p.unrealizedPnl, 0),
+    criticalCount: positions.filter(p => p.riskLevel === 'critical').length,
+    dangerCount: positions.filter(p => p.riskLevel === 'danger').length,
+    profitingCount: positions.filter(p => p.unrealizedPnl > 0).length,
+  };
+
   // Manual refresh handler
   const handleRefresh = async () => {
     setIsManualRefreshing(true);
-    
+
     // Trigger sync first
     try {
       await fetch('/api/sync', { method: 'POST' });
@@ -50,75 +62,182 @@ export default function Home() {
     fetch('/api/sync', { method: 'POST' }).catch(console.error);
   }, []);
 
+  const formatLargeUSD = (num: number) => {
+    const absNum = Math.abs(num);
+    if (absNum >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
+    if (absNum >= 1000) return `$${(num / 1000).toFixed(1)}K`;
+    return `$${num.toFixed(2)}`;
+  };
+
   return (
-    <main className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Arkham Liquidation Monitor
-          </h1>
-          <p className="text-gray-600">
-            Real-time monitoring of Hyperliquid positions for identified Arkham entities
-          </p>
+    <main className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900">
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden">
+        <div className="absolute -inset-[10px] opacity-20">
+          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+          <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
         </div>
+      </div>
+
+      <div className="relative z-10 container mx-auto px-4 py-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8 text-center"
+        >
+          <h1 className="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-violet-500 mb-2">
+            Schadenfreude
+          </h1>
+          <p className="text-gray-300 text-lg">
+            Watch the whales swim... or sink 🐋💀
+          </p>
+        </motion.div>
 
         {/* Stats Dashboard */}
         {!isLoading && !error && (
-          <div className="mb-8">
-            <DashboardStats positions={positions} />
-          </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="mb-8 grid grid-cols-2 md:grid-cols-6 gap-4"
+          >
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <p className="text-xs text-gray-400 mb-1">Positions</p>
+              <p className="text-2xl font-bold text-white">{stats.totalPositions}</p>
+            </div>
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-white/10">
+              <p className="text-xs text-gray-400 mb-1">Total Value</p>
+              <p className="text-2xl font-bold text-white">{formatLargeUSD(stats.totalValue)}</p>
+            </div>
+            <div className={`bg-black/40 backdrop-blur-sm rounded-xl p-4 border ${stats.totalPnL >= 0 ? 'border-green-500/50' : 'border-red-500/50'}`}>
+              <p className="text-xs text-gray-400 mb-1">Total PnL</p>
+              <p className={`text-2xl font-bold ${stats.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {formatLargeUSD(stats.totalPnL)}
+              </p>
+            </div>
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-red-500/50">
+              <p className="text-xs text-gray-400 mb-1">Critical</p>
+              <div className="flex items-center gap-2">
+                <Skull className="w-5 h-5 text-red-400" />
+                <p className="text-2xl font-bold text-red-400">{stats.criticalCount}</p>
+              </div>
+            </div>
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-orange-500/50">
+              <p className="text-xs text-gray-400 mb-1">Danger</p>
+              <p className="text-2xl font-bold text-orange-400">{stats.dangerCount}</p>
+            </div>
+            <div className="bg-black/40 backdrop-blur-sm rounded-xl p-4 border border-green-500/50">
+              <p className="text-xs text-gray-400 mb-1">Winning</p>
+              <div className="flex items-center gap-2">
+                <TrendingUp className="w-5 h-5 text-green-400" />
+                <p className="text-2xl font-bold text-green-400">{stats.profitingCount}</p>
+              </div>
+            </div>
+          </motion.div>
         )}
 
         {/* Filter Controls */}
-        <div className="mb-6">
-          <FilterControls
-            onFilterChange={setFilters}
-            onRefresh={handleRefresh}
-            isRefreshing={isManualRefreshing}
-          />
+        <div className="mb-6 flex flex-wrap gap-2 justify-center">
+          <Button
+            onClick={() => setSelectedRiskFilter(null)}
+            variant={selectedRiskFilter === null ? "default" : "outline"}
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+          >
+            All Positions
+          </Button>
+          <Button
+            onClick={() => setSelectedRiskFilter('critical')}
+            variant={selectedRiskFilter === 'critical' ? "destructive" : "outline"}
+            className="border-red-500/50 text-red-400 hover:bg-red-500/20"
+          >
+            <Skull className="w-4 h-4 mr-2" />
+            Critical Only
+          </Button>
+          <Button
+            onClick={() => setSelectedRiskFilter('danger')}
+            variant={selectedRiskFilter === 'danger' ? "destructive" : "outline"}
+            className="border-orange-500/50 text-orange-400 hover:bg-orange-500/20"
+          >
+            Danger Zone
+          </Button>
+          <Button
+            onClick={handleRefresh}
+            disabled={isManualRefreshing}
+            className="bg-violet-600 hover:bg-violet-700 text-white"
+          >
+            {isManualRefreshing ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+            <span className="ml-2">Refresh</span>
+          </Button>
         </div>
 
         {/* Main Content */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          {isLoading ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        {isLoading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="text-center">
+              <Loader2 className="w-16 h-16 animate-spin text-violet-400 mx-auto mb-4" />
+              <p className="text-gray-300">Loading positions...</p>
             </div>
-          ) : error ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
-              <p className="text-gray-900 font-medium mb-2">Failed to load positions</p>
-              <p className="text-gray-600 text-sm mb-4">{error.message || 'Unknown error occurred'}</p>
-              <button
-                onClick={handleRefresh}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-              >
-                Retry
-              </button>
-            </div>
-          ) : positions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <p className="text-gray-900 font-medium mb-2">No positions found</p>
-              <p className="text-gray-600 text-sm">
-                {filters.riskLevel || filters.coin
-                  ? 'Try adjusting your filters'
-                  : 'Waiting for position data...'}
-              </p>
-            </div>
-          ) : (
-            <PositionTable positions={positions} />
-          )}
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Data refreshes automatically every 30 seconds</p>
-          <p className="mt-1">
-            Last updated: {data?.timestamp ? new Date(data.timestamp).toLocaleString() : 'Loading...'}
-          </p>
-        </div>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <p className="text-red-400 font-medium mb-4">Failed to load positions</p>
+            <Button onClick={handleRefresh} variant="destructive">
+              Retry
+            </Button>
+          </div>
+        ) : positions.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-gray-400 text-lg">No positions found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {positions
+              .sort((a, b) => {
+                // Sort by risk level first, then by liquidation distance
+                const riskOrder = { critical: 0, danger: 1, warning: 2, safe: 3 };
+                const aRisk = riskOrder[a.riskLevel as keyof typeof riskOrder] ?? 4;
+                const bRisk = riskOrder[b.riskLevel as keyof typeof riskOrder] ?? 4;
+                if (aRisk !== bRisk) return aRisk - bRisk;
+                return (a.liquidationDistance || 100) - (b.liquidationDistance || 100);
+              })
+              .map((position, index) => (
+                <FunkyPositionCard key={`${position.address}-${position.coin}`} position={position} index={index} />
+              ))}
+          </div>
+        )}
       </div>
+
+      <style jsx>{`
+        @keyframes blob {
+          0% {
+            transform: translate(0px, 0px) scale(1);
+          }
+          33% {
+            transform: translate(30px, -50px) scale(1.1);
+          }
+          66% {
+            transform: translate(-20px, 20px) scale(0.9);
+          }
+          100% {
+            transform: translate(0px, 0px) scale(1);
+          }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </main>
   );
 }

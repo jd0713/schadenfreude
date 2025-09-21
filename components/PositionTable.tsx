@@ -66,6 +66,9 @@ export default function PositionTable({ positions, onSort }: PositionTableProps)
               Player
             </th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Address
+            </th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Coin
             </th>
             <th 
@@ -113,30 +116,30 @@ export default function PositionTable({ positions, onSort }: PositionTableProps)
                 <span className="text-2xl">{getRiskEmoji(position.riskLevel || 'safe')}</span>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                <div>
-                  {position.twitter ? (
-                    <a
-                      href={position.twitter}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium text-gray-900 hover:text-blue-600 hover:underline"
-                    >
-                      {position.entityName}
-                    </a>
-                  ) : (
-                    <div className="text-sm font-medium text-gray-900">
-                      {position.entityName}
-                    </div>
-                  )}
+                {position.twitter ? (
                   <a
-                    href={`https://hyperdash.info/trader/${position.address}`}
+                    href={position.twitter}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-blue-500 hover:text-blue-700 hover:underline"
+                    className="text-sm font-medium text-gray-900 hover:text-blue-600 hover:underline"
                   >
-                    {position.address.slice(0, 6)}...{position.address.slice(-4)}
+                    {position.entityName}
                   </a>
-                </div>
+                ) : (
+                  <div className="text-sm font-medium text-gray-900">
+                    {position.entityName}
+                  </div>
+                )}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap">
+                <a
+                  href={`https://hyperdash.info/trader/${position.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-500 hover:text-blue-700 hover:underline font-mono"
+                >
+                  {position.address.slice(0, 6)}...{position.address.slice(-4)}
+                </a>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <span className="text-sm font-medium text-gray-900">{position.coin}</span>

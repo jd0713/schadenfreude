@@ -10,17 +10,21 @@
     "upload-entities": "npx tsx scripts/uploadEntities.ts"
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.2.3",
     "@supabase/supabase-js": "^2.57.4",
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.12.2",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.16",
     "lucide-react": "^0.544.0",
     "next": "15.5.3",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "recharts": "^3.2.1",
-    "swr": "^2.3.6"
+    "swr": "^2.3.6",
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -32,6 +36,7 @@
     "eslint-config-next": "15.5.3",
     "tailwindcss": "^4",
     "tsx": "^4.20.5",
+    "tw-animate-css": "^1.3.8",
     "typescript": "^5"
   }
 }

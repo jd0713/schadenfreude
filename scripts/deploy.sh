@@ -30,12 +30,17 @@ mkdir -p logs
 
 # Step 5: Stop existing PM2 processes
 echo "🛑 Stopping existing PM2 processes..."
+pm2 stop arkham-tiered-sync 2>/dev/null || true
+pm2 stop arkham-entity-sync 2>/dev/null || true
 pm2 stop arkham-sync 2>/dev/null || true
+pm2 delete arkham-tiered-sync 2>/dev/null || true
+pm2 delete arkham-entity-sync 2>/dev/null || true
 pm2 delete arkham-sync 2>/dev/null || true
 
-# Step 6: Start background sync service with PM2
-echo "🔄 Starting background sync service with PM2..."
-pm2 start ecosystem.config.js --env production
+# Step 6: Start new services with PM2
+echo "🔄 Starting tiered sync services with PM2..."
+pm2 start ecosystem.config.js --only arkham-tiered-sync --env production
+pm2 start ecosystem.config.js --only arkham-entity-sync --env production
 
 # Step 7: Save PM2 configuration
 echo "💾 Saving PM2 configuration..."

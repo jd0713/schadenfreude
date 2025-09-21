@@ -12,9 +12,18 @@ interface FunkyPositionCardProps {
 }
 
 export default function FunkyPositionCard({ position, index }: FunkyPositionCardProps) {
-  const formatUSD = (num: number | null | undefined) => {
+  const formatUSD = (num: number | null | undefined, noDecimals: boolean = false) => {
     if (num === null || num === undefined) return '$0';
     const absNum = Math.abs(num);
+    
+    if (noDecimals) {
+      // Round to nearest integer for PnL
+      const rounded = Math.round(num);
+      if (Math.abs(rounded) >= 1000000) return `$${(rounded / 1000000).toFixed(1)}M`;
+      if (Math.abs(rounded) >= 1000) return `$${(rounded / 1000).toFixed(0)}K`;
+      return `$${rounded.toLocaleString()}`;
+    }
+    
     if (absNum >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
     if (absNum >= 1000) return `$${(num / 1000).toFixed(1)}K`;
     return `$${num.toFixed(2)}`;
@@ -64,7 +73,7 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
         <div className="p-6 text-white">
           {/* Header */}
           <div className="flex justify-between items-start mb-4">
-            <div>
+            <div className="flex flex-col gap-1">
               {position.twitter ? (
                 <a
                   href={position.twitter}
@@ -83,7 +92,7 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
                 rel="noopener noreferrer"
                 className="text-xs opacity-70 hover:opacity-100 font-mono"
               >
-                {position.address.slice(0, 6)}...{position.address.slice(-4)}
+                {position.address.slice(2, 7)}
               </a>
             </div>
             <Badge variant={isProfiting ? "default" : "destructive"} className="text-lg px-3 py-1">
@@ -91,16 +100,10 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
             </Badge>
           </div>
 
-          {/* Position Size & Leverage */}
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <p className="text-xs opacity-70">Position</p>
-              <p className="text-2xl font-bold">{formatUSD(position.positionValue)}</p>
-            </div>
-            <div>
-              <p className="text-xs opacity-70">Leverage</p>
-              <p className="text-2xl font-bold">{position.leverage}x</p>
-            </div>
+          {/* Position Size - Leverage removed */}
+          <div className="mb-4">
+            <p className="text-xs opacity-70">Position Value</p>
+            <p className="text-2xl font-bold">{formatUSD(position.positionValue)}</p>
           </div>
 
           {/* PnL Display */}
@@ -114,7 +117,7 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
                   <TrendingDown className="w-5 h-5 text-red-400" />
                 )}
                 <span className={`text-xl font-bold ${isProfiting ? 'text-green-400' : 'text-red-400'}`}>
-                  {formatUSD(position.unrealizedPnl)}
+                  {formatUSD(position.unrealizedPnl, true)}
                 </span>
               </div>
             </div>
@@ -129,9 +132,11 @@ export default function FunkyPositionCard({ position, index }: FunkyPositionCard
                   <p className="text-lg font-bold">
                     {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
                   </p>
+                  {/* Liquidation price commented out for future use
                   <p className="text-xs opacity-70">
                     @ {formatUSD(position.liquidationPrice)}
                   </p>
+                  */}
                 </div>
               </div>
               {position.riskLevel === 'critical' && (

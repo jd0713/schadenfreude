@@ -8,6 +8,16 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '100');
     const offset = parseInt(searchParams.get('offset') || '0');
 
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        count: 0,
+        limit,
+        offset,
+      });
+    }
+
     const { data, error, count } = await supabase
       .from('entities')
       .select('*', { count: 'exact' })

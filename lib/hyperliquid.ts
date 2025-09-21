@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { HyperliquidAccountState, HyperliquidMidPrice } from './types';
 
-const API_URL = process.env.HYPERLIQUID_API_URL || 'http://localhost:3001/info';
+const API_URL = process.env.HYPERLIQUID_API_URL || 'https://api.hyperliquid.xyz/info';
 
 export class HyperliquidClient {
   private apiUrl: string;

@@ -13,6 +13,15 @@ export async function GET(request: NextRequest) {
     const sortOrder = searchParams.get('sortOrder') || 'asc';
 
     // Get positions from database with entity info
+    if (!supabase) {
+      return NextResponse.json({
+        success: true,
+        data: [],
+        count: 0,
+        timestamp: new Date().toISOString(),
+      });
+    }
+
     const { data: dbPositions, error } = await supabase
       .from('positions')
       .select(`

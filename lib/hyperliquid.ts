@@ -1,22 +1,35 @@
 import axios from 'axios';
 import { HyperliquidAccountState, HyperliquidMidPrice } from './types';
 
-const API_URL = process.env.HYPERLIQUID_API_URL || 'https://api.hyperliquid.xyz/info';
+// Dual endpoint configuration:
+// - Private API (local node) for account states / clearinghouse data
+// - Public API for price data (allmids)
+const PRIVATE_API_URL = process.env.HYPERLIQUID_PRIVATE_API_URL ||
+                        process.env.HYPERLIQUID_API_URL ||
+                        'http://localhost:3001/info';
+const PUBLIC_API_URL = process.env.HYPERLIQUID_PUBLIC_API_URL ||
+                       'https://api.hyperliquid.xyz/info';
 
 export class HyperliquidClient {
-  private apiUrl: string;
-  private publicApiUrl: string = 'https://api.hyperliquid.xyz/info';
+  private privateApiUrl: string;  // For account states (clearinghouse)
+  private publicApiUrl: string;   // For price data (allmids)
 
-  constructor(apiUrl?: string) {
-    this.apiUrl = apiUrl || API_URL;
+  constructor(privateApiUrl?: string, publicApiUrl?: string) {
+    this.privateApiUrl = privateApiUrl || PRIVATE_API_URL;
+    this.publicApiUrl = publicApiUrl || PUBLIC_API_URL;
+
+    console.log('🔧 HyperliquidClient initialized:');
+    console.log(`   Private API (account states): ${this.privateApiUrl}`);
+    console.log(`   Public API (price data): ${this.publicApiUrl}`);
   }
 
   /**
    * Get account state for a specific user address
+   * Uses private API (local node) for clearinghouse state
    */
   async getAccountState(address: string): Promise<HyperliquidAccountState | null> {
     try {
-      const response = await axios.post(this.apiUrl, {
+      const response = await axios.post(this.privateApiUrl, {
         type: 'clearinghouseState',
         user: address,
       }, {
@@ -60,7 +73,7 @@ export class HyperliquidClient {
     const results = new Map<string, HyperliquidAccountState>();
     
     // Optimized batch size for local node (can handle much more)
-    const isLocalNode = this.apiUrl.includes('localhost') || this.apiUrl.includes('127.0.0.1');
+    const isLocalNode = this.privateApiUrl.includes('localhost') || this.privateApiUrl.includes('127.0.0.1');
     
     // Allow configuration via environment variables
     const batchSize = isLocalNode 

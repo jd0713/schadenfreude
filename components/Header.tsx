@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface HeaderProps {
   currentTime: string;
@@ -10,23 +11,32 @@ interface HeaderProps {
 }
 
 export default function Header({ currentTime, isRefreshing, onRefresh }: HeaderProps) {
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPercent = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+      setIsScrolled(scrollPercent > 80);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 p-6">
+    <header className={`fixed top-0 left-0 right-0 z-50 px-6 py-3 transition-all duration-300 ${
+      isScrolled ? 'bg-black/80 backdrop-blur-sm' : 'bg-transparent'
+    }`}>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         className="flex items-center justify-between"
       >
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-[#97FCE4] to-[#7EDDC4] rounded-lg flex items-center justify-center">
-            <span className="text-[#1D1D1D] font-pixelify font-bold text-sm">S</span>
-          </div>
-          <span className="text-[#97FCE4] font-pixelify font-bold text-xl tracking-wider">
-            SCHADENFREUDE
-          </span>
-        </div>
+        {/* Title */}
+        <span className="text-[#97FCE4] font-pixelify font-bold text-xl tracking-wider">
+          SCHADENFREUDE
+        </span>
 
         {/* Last Updated & Refresh */}
         <div className="flex items-center gap-3">

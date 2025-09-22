@@ -27,6 +27,34 @@ export default function HeroSection({ positions }: HeroSectionProps) {
     return `$${num.toFixed(2)}`;
   };
 
+  const getAvatarText = (name: string) => {
+    // Remove @ symbol and get first 2 characters
+    const cleanName = name.replace('@', '');
+    return cleanName.slice(0, 2).toUpperCase();
+  };
+
+  const getAvatarColor = (address: string) => {
+    // Consistent color palette like GMGN/MetaMask
+    const colors = [
+      'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', // Purple-Blue
+      'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', // Pink-Red
+      'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', // Blue-Cyan
+      'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', // Green-Teal
+      'linear-gradient(135deg, #fa709a 0%, #fee140 100%)', // Pink-Yellow
+      'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)', // Mint-Pink
+      'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)', // Peach
+      'linear-gradient(135deg, #ff8a80 0%, #ea6100 100%)', // Orange-Red
+      'linear-gradient(135deg, #8fd3f4 0%, #84fab0 100%)', // Sky-Green
+      'linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)', // Purple-Cream
+      'linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)', // Cyan-Blue
+      'linear-gradient(135deg, #fdbb2d 0%, #22c1c3 100%)', // Yellow-Teal
+    ];
+
+    // Use address hash to select color consistently
+    const hash = parseInt(address.slice(2, 8), 16);
+    return colors[hash % colors.length];
+  };
+
   // Use all positions for sliding background
 
   const getRiskIcon = (riskLevel?: string) => {
@@ -88,9 +116,12 @@ export default function HeroSection({ positions }: HeroSectionProps) {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#97FCE4] to-[#7EDDC4] rounded-lg flex items-center justify-center">
-                    <span className="text-[#1D1D1D] font-pixelify font-bold text-xs">
-                      {position.entityName.slice(0, 2).toUpperCase()}
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
+                    style={{ background: getAvatarColor(position.address) }}
+                  >
+                    <span className="text-white font-pixelify font-bold text-xs drop-shadow-sm">
+                      {getAvatarText(position.entityName)}
                     </span>
                   </div>
                   <div>
@@ -134,9 +165,12 @@ export default function HeroSection({ positions }: HeroSectionProps) {
             >
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-[#97FCE4] to-[#7EDDC4] rounded-lg flex items-center justify-center">
-                    <span className="text-[#1D1D1D] font-pixelify font-bold text-xs">
-                      {position.entityName.slice(0, 2).toUpperCase()}
+                  <div
+                    className="w-8 h-8 rounded-full flex items-center justify-center shadow-sm"
+                    style={{ background: getAvatarColor(position.address) }}
+                  >
+                    <span className="text-white font-pixelify font-bold text-xs drop-shadow-sm">
+                      {getAvatarText(position.entityName)}
                     </span>
                   </div>
                   <div>

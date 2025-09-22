@@ -22,11 +22,10 @@ export default function PositionFilters({
 }: PositionFiltersProps) {
   const clearAllFilters = () => {
     setSelectedRiskFilter(null);
-    setShowHighRiskOnly(false);
     setSelectedSizeCategory('all');
   };
 
-  const hasActiveFilters = selectedSizeCategory !== 'all' || selectedRiskFilter || showHighRiskOnly;
+  const hasActiveFilters = selectedSizeCategory !== 'all' || selectedRiskFilter;
 
   const sizeCategories = [
     { id: 'whale', label: '🐋 Whales', description: '&gt;$1M', active: selectedSizeCategory === 'whale' },
@@ -48,10 +47,19 @@ export default function PositionFilters({
       id: 'danger',
       label: 'Danger',
       description: '5-10%',
-      icon: AlertTriangle,
+      icon: Flame,
       active: selectedRiskFilter === 'danger',
       color: 'border-[#FE9A00] text-[#FE9A00]',
       activeColor: 'bg-[#FE9A00] text-white border-[#FE9A00]',
+    },
+    {
+      id: 'warning',
+      label: 'Warning',
+      description: '10-20%',
+      icon: AlertTriangle,
+      active: selectedRiskFilter === 'warning',
+      color: 'border-[#FFA500] text-[#FFA500]',
+      activeColor: 'bg-[#FFA500] text-white border-[#FFA500]',
     },
   ];
 
@@ -112,19 +120,6 @@ export default function PositionFilters({
               );
             })}
 
-            {/* High Risk Only Toggle */}
-            <Button
-              onClick={() => setShowHighRiskOnly(!showHighRiskOnly)}
-              size="sm"
-              className={`rounded-lg px-3 py-1 font-ibm text-xs transition-all flex items-center gap-1 ${
-                showHighRiskOnly
-                  ? "bg-[#FB2C36] text-white border border-[#FB2C36]"
-                  : "bg-[#111] border border-[#444] text-gray-300 hover:bg-[#222] hover:border-[#555]"
-              }`}
-            >
-              <Flame className="w-3 h-3" />
-              <span>High Risk</span>
-            </Button>
           </div>
 
           {/* Clear All Button */}
@@ -163,22 +158,13 @@ export default function PositionFilters({
                 <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-ibm ${
                   selectedRiskFilter === 'critical'
                     ? 'bg-[#FB2C36]/10 border border-[#FB2C36]/30 text-[#FB2C36]'
-                    : 'bg-[#FE9A00]/10 border border-[#FE9A00]/30 text-[#FE9A00]'
+                    : selectedRiskFilter === 'danger'
+                    ? 'bg-[#FE9A00]/10 border border-[#FE9A00]/30 text-[#FE9A00]'
+                    : 'bg-[#FFA500]/10 border border-[#FFA500]/30 text-[#FFA500]'
                 }`}>
                   {selectedRiskFilter}
                   <button
                     onClick={() => setSelectedRiskFilter(null)}
-                    className="ml-1 hover:text-white transition-colors"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {showHighRiskOnly && (
-                <span className="inline-flex items-center px-2 py-1 rounded-md bg-[#FB2C36]/10 border border-[#FB2C36]/30 text-[#FB2C36] text-xs font-ibm">
-                  High Risk Only
-                  <button
-                    onClick={() => setShowHighRiskOnly(false)}
                     className="ml-1 hover:text-white transition-colors"
                   >
                     <X className="w-3 h-3" />

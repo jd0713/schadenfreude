@@ -54,36 +54,30 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
 
   return (
     <div className="bg-[#0f0f0f] border border-[#333] rounded-xl overflow-hidden shadow-xl">
-      {/* Table Header with Refresh */}
-      <div className="px-4 py-3 border-b border-[#333] bg-[#111] flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-ibm font-medium text-white">Positions</h3>
-        </div>
-      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead className="border-b border-[#333] bg-[#111]">
             <tr>
-              <th className="text-left p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider w-8">
+              <th className="text-left p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider w-8">
 
               </th>
-              <th className="text-left p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-left p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Trader
               </th>
-              <th className="text-left p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-left p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Asset
               </th>
-              <th className="text-right p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-right p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Position Value
               </th>
-              <th className="text-right p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-right p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Unrealized PnL
               </th>
-              <th className="text-right p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-right p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Liq Distance
               </th>
-              <th className="text-center p-4 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
+              <th className="text-center p-5 text-sm font-ibm text-[#a3a3a3] uppercase tracking-wider">
                 Risk Level
               </th>
             </tr>
@@ -104,7 +98,7 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                     className="hover:bg-[#1a1a1a] transition-all group cursor-pointer"
                     onClick={() => toggleRowExpansion(positionId)}
                   >
-                    <td className="p-4">
+                    <td className="p-5">
                       <button className="text-[#a3a3a3] hover:text-white transition-colors">
                         {isExpanded ? (
                           <ChevronDown className="w-4 h-4" />
@@ -114,7 +108,7 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                       </button>
                     </td>
 
-                    <td className="p-4">
+                    <td className="p-5">
                       <div className="flex items-center gap-3">
                         {/* Avatar */}
                         <div className="w-10 h-10 bg-gradient-to-br from-[#97FCE4] to-[#7EDDC4] rounded-lg flex items-center justify-center flex-shrink-0">
@@ -134,7 +128,7 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                       </div>
                     </td>
 
-                    <td className="p-4">
+                    <td className="p-5">
                       <span className={`inline-flex px-3 py-1 text-xs font-ibm rounded-lg ${
                         isProfiting
                           ? 'bg-[#00C950]/10 text-[#00C950] border border-[#00C950]/30'
@@ -144,13 +138,13 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                       </span>
                     </td>
 
-                    <td className="p-4 text-right">
+                    <td className="p-5 text-right">
                       <span className="font-ibm text-white text-sm">
                         {formatLargeUSD(position.positionValue)}
                       </span>
                     </td>
 
-                    <td className="p-4 text-right">
+                    <td className="p-5 text-right">
                       <span className={`font-ibm text-sm ${
                         isProfiting ? 'text-[#00C950]' : 'text-[#FB2C36]'
                       }`}>
@@ -158,13 +152,13 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                       </span>
                     </td>
 
-                    <td className="p-4 text-right">
+                    <td className="p-5 text-right">
                       <span className={`font-ibm text-sm ${getRiskColor(position.riskLevel)}`}>
                         {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
                       </span>
                     </td>
 
-                    <td className="p-4 text-center">
+                    <td className="p-5 text-center">
                       <div className="flex items-center justify-center gap-2">
                         {getRiskIcon(position.riskLevel)}
                         <span className={`text-xs font-ibm uppercase ${getRiskColor(position.riskLevel)}`}>
@@ -186,15 +180,15 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                       >
                         <td colSpan={7} className="p-0">
                           <div className="p-6 border-t border-[#333]">
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                              {/* Trader Info */}
-                              <div className="space-y-4">
-                                <h4 className="text-sm font-ibm font-medium text-white uppercase tracking-wider">
+                            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                              {/* Trader Information Section */}
+                              <div className="space-y-3">
+                                <h4 className="text-sm font-ibm font-medium text-[#97FCE4] uppercase tracking-wider border-b border-[#97FCE4]/20 pb-2">
                                   Trader Information
                                 </h4>
                                 <div className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Full Address:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Full Address:</span>
                                     <a
                                       href={`https://hyperdash.info/trader/${position.address}`}
                                       target="_blank"
@@ -207,8 +201,8 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                                     </a>
                                   </div>
                                   {position.twitter && (
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-[#a3a3a3] font-ibm">Twitter:</span>
+                                    <div className="flex items-center justify-between py-1">
+                                      <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Twitter:</span>
                                       <a
                                         href={position.twitter}
                                         target="_blank"
@@ -224,24 +218,24 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                                 </div>
                               </div>
 
-                              {/* Position Details */}
-                              <div className="space-y-4">
-                                <h4 className="text-sm font-ibm font-medium text-white uppercase tracking-wider">
+                              {/* Position Details Section */}
+                              <div className="space-y-3">
+                                <h4 className="text-sm font-ibm font-medium text-[#97FCE4] uppercase tracking-wider border-b border-[#97FCE4]/20 pb-2">
                                   Position Details
                                 </h4>
                                 <div className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Asset:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Asset:</span>
                                     <span className="text-xs text-white font-ibm font-medium">{position.coin}</span>
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Position Size:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Position Size:</span>
                                     <span className="text-xs text-white font-ibm font-medium">
                                       {formatLargeUSD(position.positionValue)}
                                     </span>
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Unrealized PnL:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Unrealized PnL:</span>
                                     <span className={`text-xs font-ibm font-medium ${
                                       isProfiting ? 'text-[#00C950]' : 'text-[#FB2C36]'
                                     }`}>
@@ -251,14 +245,14 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                                 </div>
                               </div>
 
-                              {/* Risk Assessment */}
-                              <div className="space-y-4">
-                                <h4 className="text-sm font-ibm font-medium text-white uppercase tracking-wider">
+                              {/* Risk Assessment Section */}
+                              <div className="space-y-3">
+                                <h4 className="text-sm font-ibm font-medium text-[#97FCE4] uppercase tracking-wider border-b border-[#97FCE4]/20 pb-2">
                                   Risk Assessment
                                 </h4>
                                 <div className="space-y-2">
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Risk Level:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Risk Level:</span>
                                     <div className="flex items-center gap-1">
                                       {getRiskIcon(position.riskLevel)}
                                       <span className={`text-xs font-ibm font-medium uppercase ${getRiskColor(position.riskLevel)}`}>
@@ -266,8 +260,8 @@ export default function PositionsTable({ positions }: PositionsTableProps) {
                                       </span>
                                     </div>
                                   </div>
-                                  <div className="flex items-center justify-between">
-                                    <span className="text-xs text-[#a3a3a3] font-ibm">Liquidation Distance:</span>
+                                  <div className="flex items-center justify-between py-1">
+                                    <span className="text-xs text-[#a3a3a3] font-ibm uppercase tracking-wider">Liquidation Distance:</span>
                                     <span className={`text-xs font-ibm font-medium ${getRiskColor(position.riskLevel)}`}>
                                       {position.liquidationDistance?.toFixed(2) ?? 'N/A'}%
                                     </span>
